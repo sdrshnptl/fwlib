@@ -1,6 +1,6 @@
 /**
- * gcc -L./ -Wl,-rpath . examples/c-minimal/main.c -lfwlib32 -lm -lpthread -o fanuc_minimal_offset
- * ./fanuc_minimal_offset MACHINE_HOST tool_number offset_in_micron
+ * gcc -L./ -Wl,-rpath . examples/c-minimal/test_offset.c -lfwlib32 -lm -lpthread -o test_offset
+ * ./test_offset MACHINE_HOST tool_number offset_in_micron
  */
 
 #include <stdio.h>

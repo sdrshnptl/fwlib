@@ -3,8 +3,13 @@
 ## Linux
 From the root of this repository:  
 ```
-gcc -L./ -Wl,-rpath . examples/c-minimal/main.c -lfwlib32 -lm -lpthread -o fanuc_minimal
-./fanuc_minimal
+gcc -L./ -Wl,-rpath . examples/c-minimal/test_offset.c -lfwlib32 -lm -lpthread -o test_offset
+gcc -L./ -Wl,-rpath . examples/c-minimal/test_offset.c -lfwlib32 -lm -lpthread -o test_offset
+
+```
+
+```
+./test_offset
 ```
 
 ## Windows

@@ -72,3 +72,19 @@ Link or rename appropriate `libfwlib\*.so` (based on platform) to `libfwlib32.so
 On linux x86\_64 for example: `ln -s libfwlib32-linux-x64.so.1.0.5 libfwlib32.so` 
 
 More instructions in each example folder
+
+
+
+```
+sudo dpkg --add-architecture armhf
+sudo apt-get update
+sudo apt-get install -y libc6-dev:armhf gcc-arm-linux-gnueabihf
+#arm-linux-gnueabihf-gcc your_file.c -L./ -Wl,-rpath=./ -lpthread -lfwlib32 -o your_binary
+#gcc -L./ -Wl,-rpath . examples/c-minimal/test_offset.c -lfwlib32 -lm -lpthread -o test_offset
+arm-linux-gnueabihf-gcc examples/c-minimal/test_offset.c -L./ -Wl,-rpath=./ -lpthread -lfwlib32 -o test_offset
+
+
+./your_binary
+```
+
+
