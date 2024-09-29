@@ -88,3 +88,51 @@ arm-linux-gnueabihf-gcc examples/c-minimal/test_offset.c -L./ -Wl,-rpath=./ -lpt
 ```
 
 
+To make the **`LD_LIBRARY_PATH`** setting permanent, you can add it to one of the shell configuration files. This will ensure that the environment variable is set each time you open a new terminal session.
+
+### Steps to Make `LD_LIBRARY_PATH` Permanent:
+
+1. **Open the Shell Configuration File**:
+   Depending on which shell you are using, you need to modify the appropriate configuration file. Here's how to find the correct file:
+   - For **Bash** (default shell on most Linux distributions):
+     - Edit `~/.bashrc` for terminal sessions.
+     - If you're modifying the environment for login shells (such as when using SSH), use `~/.bash_profile` or `~/.profile`.
+
+2. **Add the `export` Line**:
+   Open the shell configuration file using a text editor like `nano`, `vim`, or `gedit`. For example, using `nano`:
+
+   ```bash
+   nano ~/.bashrc
+   ```
+
+3. **Add the Following Line** to the End of the File:
+
+   ```bash
+   export LD_LIBRARY_PATH=/home/sdrshnptl/fwlib:$LD_LIBRARY_PATH
+   ```
+
+4. **Save and Exit**:
+   - In `nano`, save by pressing `CTRL + O`, then exit by pressing `CTRL + X`.
+   - In `vim`, press `ESC`, type `:wq`, then hit `ENTER`.
+
+5. **Apply the Changes**:
+   To apply the changes immediately without restarting your terminal, run the following command:
+
+   ```bash
+   source ~/.bashrc
+   ```
+
+   This will reload the configuration file and apply the `LD_LIBRARY_PATH` setting for the current terminal session.
+
+### Verifying the Change:
+
+To verify that `LD_LIBRARY_PATH` is set correctly, run:
+
+```bash
+echo $LD_LIBRARY_PATH
+```
+
+You should see `/home/sdrshnptl/fwlib` included in the output.
+
+This will now make the setting permanent and ensure that the **FANUC FOCAS** library is available for future terminal sessions without needing to manually set the path each time.
+
