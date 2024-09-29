@@ -18,13 +18,15 @@ int read_cnc_param(unsigned short libh, short param_no, int *result) {
 }
 
 // Helper function to read a specific timer
-int read_timer(unsigned short libh, short type, const char *timer_name) {
+int read_timer(unsigned short libh, short type, long *minute, long *msec, const char *timer_name) {
     IODBTIME timer;
     int ret = cnc_rdtimer(libh, type, &timer);
     if (ret != EW_OK) {
         fprintf(stderr, "Failed to read %s! (%d)\n", timer_name, ret);
         return ret;
     }
+    *minute = timer.minute;
+    *msec = timer.msec;
     printf("%s: %ld minutes, %ld milliseconds\n", timer_name, timer.minute, timer.msec);
     return EW_OK;
 }
@@ -38,9 +40,14 @@ int main(int argc, char *argv[]) {
     short spindle_number = 1;
     short data_type = 0;
 
+    // Cycle time tracking
+    int last_job_number = -1;
+    long last_job_cycle_time_minutes = 0, last_job_cycle_time_msec = 0;
+    long current_job_cycle_time_minutes = 0, current_job_cycle_time_msec = 0;
+
     // Define planned production time and ideal cycle time
     double planned_production_time = 480.0; // Example: 480 minutes (8 hours)
-    double ideal_cycle_time = 6.0; // Example: 1 minute per part
+    double ideal_cycle_time = 5.0; // Example: 1 minute per part
 
     // Allow machine host and port to be set via command-line arguments
     const char *host = (argc > 1) ? argv[1] : DEFAULT_MACHINE_HOST;
@@ -54,9 +61,9 @@ int main(int argc, char *argv[]) {
 
     // Connect to CNC
     if ((ret = cnc_allclibhndl3(host, port, 10, &libh)) != EW_OK) {
-        unsigned short err_no;
-        cnc_getdtailerr(libh, &err_no);
-        fprintf(stderr, "Failed to connect to CNC! (%d), Detail Error: %d\n", ret, err_no);
+        ODBERR err_no; // Fix: Use ODBERR structure for error details
+        cnc_getdtailerr(libh, &err_no); // Pass ODBERR structure
+        fprintf(stderr, "Failed to connect to CNC! (%d), Detail Error: %d\n", ret, err_no.err_no);
         goto cleanup;
     }
 
@@ -72,6 +79,25 @@ int main(int argc, char *argv[]) {
         goto cleanup;
     }
     printf("Running job: %d\n", odbpro.data);
+
+    // Check if the job has changed
+    if (last_job_number != odbpro.data) {
+        // Save the cycle time for the last job
+        if (last_job_number != -1) {
+            last_job_cycle_time_minutes = current_job_cycle_time_minutes;
+            last_job_cycle_time_msec = current_job_cycle_time_msec;
+            printf("Cycle time for last job %d: %ld minutes, %ld milliseconds\n", 
+                    last_job_number, last_job_cycle_time_minutes, last_job_cycle_time_msec);
+        }
+
+        // Update last job number and reset current job cycle time
+        last_job_number = odbpro.data;
+        current_job_cycle_time_minutes = 0;
+        current_job_cycle_time_msec = 0;
+    }
+
+    // Read current job cycle time
+    read_timer(libh, 3, &current_job_cycle_time_minutes, &current_job_cycle_time_msec, "Current job cycle time");
 
     // Read job count
     int job_count;
@@ -111,13 +137,6 @@ int main(int argc, char *argv[]) {
         goto cleanup;
     }
     printf("Good parts produced: %d\n", good_parts_produced);
-
-    // Read various timers
-    read_timer(libh, 0, "Power on time");
-    read_timer(libh, 1, "Operating time");
-    read_timer(libh, 2, "Cutting time");
-    read_timer(libh, 3, "Cycle time");
-    read_timer(libh, 4, "Free purpose time");
 
     // Calculate OEE with safety checks
     if (total_parts_produced > 0 && operating_time > 0) {

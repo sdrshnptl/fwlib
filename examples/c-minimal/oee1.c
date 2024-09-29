@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
 
     // Define planned production time and ideal cycle time
     double planned_production_time = 480.0; // Example: 480 minutes (8 hours)
-    double ideal_cycle_time = 6.0; // Example: 1 minute per part
+    double ideal_cycle_time = 1.0; // Example: 1 minute per part
 
     // Allow machine host and port to be set via command-line arguments
     const char *host = (argc > 1) ? argv[1] : DEFAULT_MACHINE_HOST;
@@ -54,9 +54,9 @@ int main(int argc, char *argv[]) {
 
     // Connect to CNC
     if ((ret = cnc_allclibhndl3(host, port, 10, &libh)) != EW_OK) {
-        unsigned short err_no;
-        cnc_getdtailerr(libh, &err_no);
-        fprintf(stderr, "Failed to connect to CNC! (%d), Detail Error: %d\n", ret, err_no);
+        ODBERR err_no; // Fix: Use ODBERR structure for error details
+        cnc_getdtailerr(libh, &err_no); // Pass ODBERR structure
+        fprintf(stderr, "Failed to connect to CNC! (%d), Detail Error: %d\n", ret, err_no.err_no);
         goto cleanup;
     }
 

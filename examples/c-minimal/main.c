@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "../../fwlib32.h"
-#define DEFAULT_MACHINE_HOST "127.0.0.1"
+#define DEFAULT_MACHINE_HOST "192.168.11.12"
 #define MACHINE_PORT 8193
 
 int main(int argc, char *argv[]) {
