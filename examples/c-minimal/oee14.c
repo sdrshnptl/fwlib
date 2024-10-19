@@ -71,6 +71,7 @@ int main(int argc, char *argv[])
     ODBSPLOAD spindle_load;  // Spindle load meter
     ODBSVLOAD servo_load;    // Servo load meter
     IODBPSD power_data;      // Power data
+    IODBPSD operating_time;  // Operating time
 
     IODBTIME power_on_time;  // 0
     IODBTIME operation_time; // 1
@@ -137,7 +138,7 @@ int main(int argc, char *argv[])
     // printf("Job count: %d\n", job_count);
 
     // Read operating time
-    IODBPSD operating_time;
+    
     if ((ret = cnc_rdparam(libh, 6750, 0, 8, &operating_time)) != EW_OK)
     { // Example parameter number for operating time
         fprintf(stderr, "Failed to read operating time! (%d)\n", ret);
@@ -232,12 +233,12 @@ int main(int argc, char *argv[])
              odbpro.data,            // NC Program number
              job_counter.u.ldata,    // job counter
              part_counter.u.ldata,   // Part counter
-             operating_time.u.ldata, //
-             power_on_time.minute, power_on_time.msec,
-             operation_time.minute, operation_time.msec,
-             cutting_time.minute, cutting_time.msec,
-             cycle_time.minute, cycle_time.msec,
-             free_time.minute, free_time.msec//,
+             operating_time.u.ldata, // operating time
+             power_on_time.minute, power_on_time.msec, // Power on time
+             operation_time.minute, operation_time.msec, // Operation time
+             cutting_time.minute, cutting_time.msec, // Cutting time
+             cycle_time.minute, cycle_time.msec, // Cycle time
+             free_time.minute, free_time.msec// Free time
             //  tool_life_data[0].data->ntool,tool_life_data[0].data->life,tool_life_data[0].data->count,
             //  tool_life_data[1].data->ntool,tool_life_data[1].data->life,tool_life_data[1].data->count,
             //  tool_life_data[2].data->ntool,tool_life_data[2].data->life,tool_life_data[2].data->count,
